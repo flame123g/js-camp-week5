@@ -73,12 +73,12 @@ function getProductsByCategory(products, category) {
   // 請實作此函式
  let filterCategory; 
  if(category==="全部"){
-  filterCategory=products;
-  //return products;
+    filterCategory=products;
+    //return products;
  }else{
-  filterCategory=products.filter(function(product){
-    return product.category==category;
-  });
+    filterCategory=products.filter(function(product){
+      return product.category==category;
+    });
  };  
  return filterCategory;
 
@@ -92,9 +92,7 @@ function getProductsByCategory(products, category) {
  */
 function getDiscountRate(product) {
   // 請實作此函式
-  //product: products[0]
-  //{ id: 'prod-1', title: '經典白T', category: '衣服', origin_price: 500, price: 399, images: 'https://example.com/t1.jpg' }
-  let discountRate=  Math.round((product.price / product.origin_price) * 100) / 10;
+  let discountRate= Math.round((product.price / product.origin_price) * 100) / 10;
   return `${discountRate}折`;
 
 }
@@ -163,7 +161,6 @@ function calculateSavings(carts) {
  */
 function calculateCartItemCount(carts) {
   // 請實作此函式
-  //const carts = [{ id: 'cart-1', product: products[0], quantity: 2 },... ];
   let cartTotalitem=carts.reduce(function(acc,current){
     return acc+current.quantity;
   },0);
@@ -177,7 +174,7 @@ function calculateCartItemCount(carts) {
  * @returns {boolean} - 回傳 true 或 false
  */
 function isProductInCart(carts, productId) {
-  // 請實作此函式
+  // 請實作此函式--除了用some以外，也可以用filter來實作
   let isProductinCart=carts.some(function(item){
     return item.product.id===productId;
   });
@@ -198,18 +195,42 @@ function isProductInCart(carts, productId) {
  */
 function addToCart(carts, product, quantity) {
   // 請實作此函式
+//助教修改建議：addToCart 的 item.quantity += quantity 這段會修改到原始物件，可再調整一下 
+let sameProdictInCarts=[...carts];
 let addInCart=[];
-  let sameProdictInCarts=carts.map(function(item){
+  sameProdictInCarts.forEach(item=>{
     if(item.product.id===product.id){
-      return item.quantity+=quantity;
+      item.quantity+=quantity;
     };
   });
-  carts.forEach(function(item){
+  sameProdictInCarts.forEach(item=>{
     if(item.product.id!==product.id){
       addInCart=[...sameProdictInCarts,{id:"cart-new",product,quantity}];
     };
   });
   return addInCart;
+//助教主線任務講解說明
+  // const findCartIndex=carts.findIndex(cart=>cart.product.id===product.id);
+  // //用 findIndex 找到相同產品，則合併數量
+  // if(findCartIndex!==-1){
+  //   //const updateQuantityCart
+  //   const updateQuantityCart= carts.map((cart,index=>{
+  //     if(index===findCartIndex){
+  //         return {...cart, quantity: cart.quantity + quantity};
+  //     };
+  //     return cart;//沒有找到，回傳原本的的資料
+  //   }));
+  // console.log(updateQuantityCart);
+  // return updateQuantityCart;
+  // }else{
+  // //找不到相同產品，則新增資料
+  //   const newCart= {
+  //     id: `cart-${carts.length + 1}`,
+  //     product,
+  //     quantity  
+  //   };
+  //   return [...carts, newCart];
+  // };
 }
 
 /**
@@ -221,24 +242,28 @@ let addInCart=[];
  */
 function updateCartItemQuantity(carts, cartId, newQuantity) {
   // 請實作此函式
-//   const carts = [
-//   { id: 'cart-1', product: products[0], quantity: 2 },
-//   { id: 'cart-2', product: products[2], quantity: 1 },
-//   { id: 'cart-3', product: products[4], quantity: 1 }
-// ];
-  let cartsItemCount=carts.map(function(item){
-    let hasDeleteId;
-    let cartSplice;
+//助教修改建議：updateCartItemQuantity 使用的 splice 也會修改到原始陣列，會建議改用 map 或 filter 產生新陣列
+  let cartsItem=carts.map(item=>{
     if(item.id===cartId){
-      if(newQuantity<=0){
-        hasDeleteId=carts.findIndex(function(item){
-          return item.id===cartId;
-        });
-      };
-      cartSplice=carts.splice(hasDeleteId,1);
+      item.quantity=newQuantity;
+      return item;
     };
-  });
-  return cartsItemCount;
+    return item;
+  }).filter(item=> item.quantity>0);
+  return cartsItem;
+//助教主線任務講解說明
+// if(newQuantity<=0){
+//   return carts.filter(cart=>cart.id!==cartId);
+// };  
+// return carts.map(cart=>{
+//     if(cart.id===cartId){
+//       return {
+//         ...cart,
+//         quantity: newQuantity
+//       };
+//     };
+//     return cart;
+//   });
 }
 
 /**
@@ -248,7 +273,7 @@ function updateCartItemQuantity(carts, cartId, newQuantity) {
  * @returns {Array} - 回傳移除後的新購物車陣列
  */
 function removeFromCart(carts, cartId) {
-  // 請實作此函式
+  // 請實作此函式 
   let filterCartsArr=carts.filter(function(item){
     return item.id!==cartId;
   });
@@ -312,6 +337,7 @@ function filterOrdersByStatus(orders, isPaid) {
  */
 function generateOrderReport(orders) {
   // 請實作此函式
+  //助教修改建議：generateOrderReport 的 averageOrderValue 變數計算後可使用 Math.round() 取整數
   let ordersObj={
     totalOrders: 0,
     paidOrders: 0,
@@ -334,10 +360,8 @@ function generateOrderReport(orders) {
     OrderValue+=item.total;
   });
   //averageOrderValue
-  ordersObj.averageOrderValue=OrderValue/ordersObj.totalOrders;
-
+  ordersObj.averageOrderValue=Math.round(OrderValue/ordersObj.totalOrders);
   return ordersObj;
-
 }
 
 /**
@@ -363,6 +387,22 @@ function groupOrdersByPayment(orders) {
     };
   });
   return ordersByPayment;
+  //助教修改建議：目前 groupOrdersByPayment 的寫法是寫死 ATM 與 Credit Card 兩種付款方式，會建議利用訂單陣列改為可擴充的寫法
+  //以助教主線任務講解說明--利用 reduce 的方式，將資料累加進去，學習reduce的另一種寫法，也可以用filter的方式來寫
+  // return orders.reduce((group, order) => {
+  //   const payment = order.user.payment;
+  //   // 如果該付款方式的陣列不存在，初始化為空陣列
+    /*group為{}
+    當"ATM"第一次出現時，group["ATM"]不存在，所以會初始化為空陣列({"ATM": []})，然後將訂單推入該陣列中。
+    當"Credit Card"第一次出現時，group["Credit Card"]不存在，所以會初始化為空陣列，然後將訂單推入該陣列中。
+     */  
+  //   if (!group[payment]) {
+  //     group[payment] = [];
+  //   };
+  //   group[payment].push(order);
+  //   return group;
+  // }, {});//初始值group為空物件，最後會回傳依付款方式分組的訂單物件   
+
 }
 
 // ========================================
