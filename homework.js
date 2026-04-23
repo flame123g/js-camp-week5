@@ -375,33 +375,34 @@ function generateOrderReport(orders) {
  */
 function groupOrdersByPayment(orders) {
   // 請實作此函式
-  let ordersByPayment={
-    'ATM': [],
-    'Credit Card': []
-  };
-  orders.forEach(function(item){
-    if(item.user.payment=="ATM"){
-      ordersByPayment.ATM.push(item);
-    }else{
-      ordersByPayment["Credit Card"].push(item);
-    };
-  });
-  return ordersByPayment;
-  //助教修改建議：目前 groupOrdersByPayment 的寫法是寫死 ATM 與 Credit Card 兩種付款方式，會建議利用訂單陣列改為可擴充的寫法
+  //原本寫的內容-需要修改
+  // let ordersByPayment={
+  //   'ATM': [],
+  //   'Credit Card': []
+  // };
+  // orders.forEach(function(item){
+  //   if(item.user.payment=="ATM"){
+  //     ordersByPayment.ATM.push(item);
+  //   }else{
+  //     ordersByPayment["Credit Card"].push(item);
+  //   };
+  // });
+  // return ordersByPayment;
+ //助教修改建議：目前 groupOrdersByPayment 的寫法是寫死 ATM 與 Credit Card 兩種付款方式，會建議利用訂單陣列改為可擴充的寫法
   //以助教主線任務講解說明--利用 reduce 的方式，將資料累加進去，學習reduce的另一種寫法，也可以用filter的方式來寫
-  // return orders.reduce((group, order) => {
-  //   const payment = order.user.payment;
-  //   // 如果該付款方式的陣列不存在，初始化為空陣列
+   return orders.reduce((group, order) => {
+     const payment = order.user.payment;
+     // 如果該付款方式的陣列不存在，初始化為空陣列
     /*group為{}
     當"ATM"第一次出現時，group["ATM"]不存在，所以會初始化為空陣列({"ATM": []})，然後將訂單推入該陣列中。
     當"Credit Card"第一次出現時，group["Credit Card"]不存在，所以會初始化為空陣列，然後將訂單推入該陣列中。
      */  
-  //   if (!group[payment]) {
-  //     group[payment] = [];
-  //   };
-  //   group[payment].push(order);
-  //   return group;
-  // }, {});//初始值group為空物件，最後會回傳依付款方式分組的訂單物件   
+     if (!group[payment]) {
+       group[payment] = [];
+     };
+     group[payment].push(order);
+     return group;
+   }, {});//初始值group為空物件，最後會回傳依付款方式分組的訂單物件   
 
 }
 
